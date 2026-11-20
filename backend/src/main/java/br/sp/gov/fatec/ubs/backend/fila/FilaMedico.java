@@ -57,6 +57,15 @@ public class FilaMedico {
         return proximo;
     }
 
+    /** Encerra o atendimento atual, se for desse agendamento. */
+    public boolean finalizarAtendimento(Long agendamentoId) {
+        if (emAtendimento != null && emAtendimento.getAgendamentoId().equals(agendamentoId)) {
+            emAtendimento = null;
+            return true;
+        }
+        return false;
+    }
+
     /** Remove um paciente que desistiu de esperar. */
     public boolean remover(Long agendamentoId) {
         return preferencial.removeIf(i -> i.getAgendamentoId().equals(agendamentoId))

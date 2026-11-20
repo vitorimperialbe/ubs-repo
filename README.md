@@ -37,8 +37,34 @@ Endpoints:
 | POST | `/api/fila/medico/{medicoId}/chamar` | tira o próximo da fila (204 se vazia) |
 | GET | `/api/fila` | situação de todas as filas |
 | GET | `/api/fila/medico/{medicoId}` | situação da fila de um médico |
+| POST | `/api/fila/medico/{medicoId}/finalizar/{agendamentoId}` | médico terminou a consulta (agendamento vira REALIZADO) |
 | DELETE | `/api/fila/{agendamentoId}` | paciente desistiu (sai da fila e o agendamento vira FALTOU) |
 
 Como testar: faça login como admin → **Agendamentos** → crie agendamentos para hoje (um paciente com
 60+ anos e outros mais novos) → **Fila de Atendimento** → faça o check-in de todos → clique em
 **Chamar próximo** e veja a ordem P, P, N, P, N...
+
+### Rodar localmente com banco em memória (sem MySQL/Docker)
+
+Perfil `local`: usa banco **H2 em memória** e já cria dados de exemplo (2 médicos, 7 pacientes e
+agendamentos para hoje). Os dados somem quando o backend é desligado.
+
+```bash
+# backend (porta 8080)
+cd backend
+LISTA_HOSTS=http://localhost:4200 ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
+```
+
+```bash
+# frontend (porta 4200), em outro terminal
+cd frontend
+npm install
+npx ng serve
+```
+
+Acesse http://localhost:4200 e entre com o admin padrão do projeto (`super.admin@email.com` / `123456`),
+depois abra **Fila de Atendimento**.
+
+> No Windows, se o usuário tiver acento no nome e o backend falhar com
+> `Unable to establish loopback connection`, adicione
+> `-Dspring-boot.run.jvmArguments="-Djdk.net.unixdomain.tmpdir=C:/Users/Public"`.

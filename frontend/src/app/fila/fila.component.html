@@ -7,7 +7,7 @@
       <mat-form-field appearance="outline">
         <mat-label>Agendamento de hoje</mat-label>
         <mat-select [(ngModel)]="agendamentoSelecionado">
-          <mat-option *ngFor="let a of disponiveisParaCheckin" [value]="a.id">
+          <mat-option *ngFor="let a of disponiveisParaCheckin; trackBy: porId" [value]="a.id">
             {{ hora(a.dataHoraConsulta) }} – {{ a.paciente.nomeCompleto }} (Dr(a). {{ a.medico.nomeCompleto }})
           </mat-option>
         </mat-select>
@@ -31,7 +31,7 @@
   <mat-card-content><p class="vazio">Nenhuma fila aberta ainda.</p></mat-card-content>
 </mat-card>
 
-<mat-card *ngFor="let fila of filas" class="fila-card">
+<mat-card *ngFor="let fila of filas; trackBy: porMedico" class="fila-card">
   <mat-card-title>Dr(a). {{ nomeMedico(fila) }}</mat-card-title>
   <mat-card-subtitle>
     {{ fila.totalPreferencial }} preferencial(is) · {{ fila.totalNormal }} normal(is) aguardando
@@ -44,7 +44,7 @@
     </div>
 
     <ol class="lista">
-      <li *ngFor="let item of fila.aguardando">
+      <li *ngFor="let item of fila.aguardando; trackBy: porAgendamento">
         <span class="senha" [class.pref]="item.preferencial">{{ item.senha }}</span>
         <span class="nome">{{ item.nomePaciente }}</span>
         <span class="motivo" *ngIf="item.preferencial">{{ item.motivoPrioridade }}</span>

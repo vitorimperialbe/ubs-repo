@@ -35,6 +35,10 @@ export class FilaService {
     return this.http.post<ItemFila | null>(`${this.apiUrl}/medico/${medicoId}/chamar`, {});
   }
 
+  finalizar(medicoId: number, agendamentoId: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/medico/${medicoId}/finalizar/${agendamentoId}`, {});
+  }
+
   situacaoGeral(): Observable<SituacaoFila[]> {
     return this.http.get<SituacaoFila[]>(this.apiUrl);
   }

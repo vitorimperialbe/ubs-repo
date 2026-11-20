@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router'; // <-- Adicionado RouterLink
+import { Router } from '@angular/router';
 import { PacienteService } from '../service/paciente.service';
 
 @Component({
@@ -9,8 +9,8 @@ import { PacienteService } from '../service/paciente.service';
   templateUrl: './lista.component.html',
   styleUrls: ['./lista.component.css'],
   standalone: true,
-  // CORREÇÃO: Adicionando RouterLink nos imports para que os botões funcionem
-  imports: [CommonModule, FormsModule, RouterLink], 
+
+  imports: [CommonModule, FormsModule], 
 })
 export class ListaComponent implements OnInit {
   pacientes: any[] = [];

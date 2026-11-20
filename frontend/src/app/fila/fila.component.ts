@@ -89,8 +89,8 @@ export class FilaComponent implements OnInit, OnDestroy {
   }
 
   finalizar(item: ItemFila): void {
-    this.agendamentoService.marcarComoRealizado(item.agendamentoId).subscribe({
-      next: () => this.mensagem(`Atendimento de ${item.nomePaciente} finalizado`),
+    this.filaService.finalizar(item.medicoId, item.agendamentoId).subscribe({
+      next: () => { this.mensagem(`Atendimento de ${item.nomePaciente} finalizado`); this.carregarFilas(); },
       error: () => this.mensagem('Erro ao finalizar atendimento')
     });
   }
@@ -105,6 +105,11 @@ export class FilaComponent implements OnInit, OnDestroy {
   nomeMedico(fila: SituacaoFila): string {
     return fila.emAtendimento?.nomeMedico || fila.aguardando[0]?.nomeMedico || `Médico ${fila.medicoId}`;
   }
+
+  // trackBy: evita recriar a lista inteira a cada atualização automática
+  porId = (_: number, a: Agendamento) => a.id;
+  porMedico = (_: number, f: SituacaoFila) => f.medicoId;
+  porAgendamento = (_: number, i: ItemFila) => i.agendamentoId;
 
   hora(s: string): string {
     return new Date(s).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });

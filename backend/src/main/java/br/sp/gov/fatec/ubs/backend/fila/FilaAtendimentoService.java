@@ -35,13 +35,27 @@ public class FilaAtendimentoService {
     private final Map<Long, Long> agendamentosNaFila = new HashMap<>();
     private int contadorPreferencial = 0;
     private int contadorNormal = 0;
+    private LocalDate diaDasFilas = LocalDate.now();
 
     public FilaAtendimentoService(AgendamentoRepository agendamentoRepository) {
         this.agendamentoRepository = agendamentoRepository;
     }
 
+    /** A fila é do dia: se o dia mudou, começa tudo do zero (senhas voltam para 001). */
+    private void reiniciarSeMudouODia() {
+        LocalDate hoje = LocalDate.now();
+        if (!hoje.equals(diaDasFilas)) {
+            filasPorMedico.clear();
+            agendamentosNaFila.clear();
+            contadorPreferencial = 0;
+            contadorNormal = 0;
+            diaDasFilas = hoje;
+        }
+    }
+
     /** Recepção registra a chegada do paciente e ele entra no fim da fila do seu médico. */
     public synchronized ItemFila fazerCheckin(Long agendamentoId, String prioridadeInformada) {
+        reiniciarSeMudouODia();
         Agendamento agendamento = agendamentoRepository.findById(agendamentoId)
                 .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado"));
 
@@ -74,6 +88,7 @@ public class FilaAtendimentoService {
 
     /** Médico chama o próximo paciente da sua fila. Retorna null se a fila estiver vazia. */
     public synchronized ItemFila chamarProximo(Long medicoId) {
+        reiniciarSeMudouODia();
         FilaMedico fila = filasPorMedico.get(medicoId);
         if (fila == null) {
             return null;
@@ -83,6 +98,18 @@ public class FilaAtendimentoService {
             agendamentosNaFila.remove(proximo.getAgendamentoId());
         }
         return proximo;
+    }
+
+    /** Médico terminou a consulta: libera o médico e o agendamento vira REALIZADO. */
+    public synchronized void finalizarAtendimento(Long medicoId, Long agendamentoId) {
+        FilaMedico fila = filasPorMedico.get(medicoId);
+        if (fila == null || !fila.finalizarAtendimento(agendamentoId)) {
+            throw new IllegalArgumentException("Esse paciente não está em atendimento com esse médico");
+        }
+        agendamentoRepository.findById(agendamentoId).ifPresent(a -> {
+            a.setStatus(Agendamento.StatusAgendamento.REALIZADO);
+            agendamentoRepository.save(a);
+        });
     }
 
     /** Paciente desistiu: sai da fila e o agendamento é marcado como FALTOU. */
@@ -112,6 +139,7 @@ public class FilaAtendimentoService {
 
     /** Situação de todas as filas (tela da recepção). */
     public synchronized List<Map<String, Object>> situacaoGeral() {
+        reiniciarSeMudouODia();
         List<Map<String, Object>> lista = new ArrayList<>();
         for (Long medicoId : filasPorMedico.keySet()) {
             lista.add(situacao(medicoId));

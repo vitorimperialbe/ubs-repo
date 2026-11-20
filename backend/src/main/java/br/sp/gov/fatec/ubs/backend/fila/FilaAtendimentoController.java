@@ -1,6 +1,7 @@
 package br.sp.gov.fatec.ubs.backend.fila;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/fila")
+@PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MEDICO')")
 public class FilaAtendimentoController {
 
     private final FilaAtendimentoService filaService;
@@ -35,6 +37,17 @@ public class FilaAtendimentoController {
     public ResponseEntity<ItemFila> chamarProximo(@PathVariable Long medicoId) {
         ItemFila proximo = filaService.chamarProximo(medicoId);
         return proximo == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(proximo);
+    }
+
+    /** Médico terminou a consulta do paciente que está em atendimento. */
+    @PostMapping("/medico/{medicoId}/finalizar/{agendamentoId}")
+    public ResponseEntity<?> finalizar(@PathVariable Long medicoId, @PathVariable Long agendamentoId) {
+        try {
+            filaService.finalizarAtendimento(medicoId, agendamentoId);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(Map.of("erro", e.getMessage()));
+        }
     }
 
     @GetMapping("/medico/{medicoId}")

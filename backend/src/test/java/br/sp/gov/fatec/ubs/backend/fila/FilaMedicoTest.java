@@ -56,6 +56,16 @@ class FilaMedicoTest {
     }
 
     @Test
+    void finalizarLiberaOMedico() {
+        FilaMedico fila = new FilaMedico();
+        fila.entrar(item(1, false));
+        fila.chamarProximo();
+        assertFalse(fila.finalizarAtendimento(99L));
+        assertTrue(fila.finalizarAtendimento(1L));
+        assertNull(fila.getEmAtendimento());
+    }
+
+    @Test
     void removerPacienteQueDesistiu() {
         FilaMedico fila = new FilaMedico();
         fila.entrar(item(1, false));
