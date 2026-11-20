@@ -7,7 +7,6 @@
 - Gabriel Paulino
 - Raul
 - Samuel
-- Vinycius
 - Vitor
 
 
