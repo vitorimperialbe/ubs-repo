@@ -1,0 +1,64 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 16px;
+}
+
+mat-card {
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.ajuda, .vazio {
+  color: #555;
+}
+
+.checkin {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  align-items: center;
+}
+
+.em-atendimento {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  background: #e8f5e9;
+  border-radius: 6px;
+}
+
+.lista {
+  padding-left: 20px;
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  .nome { font-weight: 500; }
+  .motivo { font-size: 0.85rem; color: #b26a00; }
+  .chegada { font-size: 0.85rem; color: #777; margin-left: auto; }
+}
+
+.senha {
+  min-width: 48px;
+  text-align: center;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #1976d2;
+  color: #fff;
+
+  &.pref { background: #ef6c00; }
+}

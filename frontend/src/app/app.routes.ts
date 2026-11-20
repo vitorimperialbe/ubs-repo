@@ -6,6 +6,7 @@ import { Logado as logadoAdmin } from './admin/logado/logado';
 import { Logado as logadoCliente } from './cliente/logado/logado';
 import { ListaComponent } from './lista/lista.component';
 import { AgendamentoComponent } from './agendamento/agendamento.component';
+import { FilaComponent } from './fila/fila.component';
 
 import { AuthGuard } from './auth-guard';
 import { CadastroComponent } from './cadastro/cadastro.component';
@@ -50,6 +51,11 @@ export const routes: Routes = [
     {
         path: 'agendamento',
         component: AgendamentoComponent,
+        canActivate: [AuthGuard]
+    },
+    {
+        path: 'fila',
+        component: FilaComponent,
         canActivate: [AuthGuard]
     }
 

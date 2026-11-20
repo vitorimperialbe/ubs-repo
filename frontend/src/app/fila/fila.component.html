@@ -1,0 +1,62 @@
+<mat-card>
+  <mat-card-title>Check-in na Recepção</mat-card-title>
+  <mat-card-content>
+    <p class="ajuda">Selecione um agendamento de hoje para colocar o paciente na fila do médico.
+      Idosos (60+) e pessoas com deficiência no cadastro entram automaticamente na fila preferencial.</p>
+    <div class="checkin">
+      <mat-form-field appearance="outline">
+        <mat-label>Agendamento de hoje</mat-label>
+        <mat-select [(ngModel)]="agendamentoSelecionado">
+          <mat-option *ngFor="let a of disponiveisParaCheckin" [value]="a.id">
+            {{ hora(a.dataHoraConsulta) }} – {{ a.paciente.nomeCompleto }} (Dr(a). {{ a.medico.nomeCompleto }})
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Prioridade informada (opcional)</mat-label>
+        <mat-select [(ngModel)]="prioridadeSelecionada">
+          <mat-option value="">Nenhuma / automática</mat-option>
+          <mat-option *ngFor="let p of prioridades" [value]="p">{{ p }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="fazerCheckin()" [disabled]="!agendamentoSelecionado">
+        <mat-icon>how_to_reg</mat-icon> Fazer check-in
+      </button>
+    </div>
+    <p *ngIf="disponiveisParaCheckin.length === 0" class="vazio">Nenhum agendamento de hoje aguardando check-in.</p>
+  </mat-card-content>
+</mat-card>
+
+<mat-card *ngIf="filas.length === 0">
+  <mat-card-content><p class="vazio">Nenhuma fila aberta ainda.</p></mat-card-content>
+</mat-card>
+
+<mat-card *ngFor="let fila of filas" class="fila-card">
+  <mat-card-title>Dr(a). {{ nomeMedico(fila) }}</mat-card-title>
+  <mat-card-subtitle>
+    {{ fila.totalPreferencial }} preferencial(is) · {{ fila.totalNormal }} normal(is) aguardando
+  </mat-card-subtitle>
+  <mat-card-content>
+    <div class="em-atendimento" *ngIf="fila.emAtendimento as atual">
+      <span class="senha" [class.pref]="atual.preferencial">{{ atual.senha }}</span>
+      <span>Em atendimento: <strong>{{ atual.nomePaciente }}</strong></span>
+      <button mat-button color="primary" (click)="finalizar(atual)">Finalizar</button>
+    </div>
+
+    <ol class="lista">
+      <li *ngFor="let item of fila.aguardando">
+        <span class="senha" [class.pref]="item.preferencial">{{ item.senha }}</span>
+        <span class="nome">{{ item.nomePaciente }}</span>
+        <span class="motivo" *ngIf="item.preferencial">{{ item.motivoPrioridade }}</span>
+        <span class="chegada">chegou {{ hora(item.horaChegada) }}</span>
+        <button mat-icon-button color="warn" (click)="remover(item)" title="Desistiu / faltou">
+          <mat-icon>person_remove</mat-icon>
+        </button>
+      </li>
+    </ol>
+
+    <button mat-raised-button color="accent" (click)="chamar(fila)" [disabled]="fila.aguardando.length === 0">
+      <mat-icon>campaign</mat-icon> Chamar próximo
+    </button>
+  </mat-card-content>
+</mat-card>
